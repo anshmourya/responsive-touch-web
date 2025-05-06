@@ -11,6 +11,11 @@ interface University {
   state: string;
   name: string;
   phone: string;
+  email: string;
+  address: string;
+  fees: string;
+  headName: string;
+  inFavourOf: string;
 }
 
 const Index = () => {
@@ -24,13 +29,23 @@ const Index = () => {
       id: 1,
       state: "Andhra Pradesh",
       name: "Andhra University",
-      phone: "+91-x-x-x-x-x",
+      phone: "+91-9876543210",
+      email: "info@andhrauni.edu",
+      address: "Visakhapatnam, Andhra Pradesh",
+      fees: "₹50,000",
+      headName: "Dr. P. V. G. D. Prasad Reddy",
+      inFavourOf: "Registrar, Andhra University",
     },
     {
       id: 2,
       state: "Uttar Pradesh",
       name: "Uttar Pradesh University",
-      phone: "+91-x-x-x-x-x",
+      phone: "+91-9876543211",
+      email: "info@upuni.edu",
+      address: "Lucknow, Uttar Pradesh",
+      fees: "₹45,000",
+      headName: "Dr. R.K. Singh",
+      inFavourOf: "Registrar, UP University",
     },
   ]);
 
@@ -99,10 +114,6 @@ const Index = () => {
     });
     console.log("Exporting to Excel");
     // In a real application, you would generate an Excel file here
-  };
-
-  const handleCreateNewUniversity = () => {
-    // This function is now handled directly in the UniversityDetails component
   };
 
   const handleDeleteUniversityDetail = () => {

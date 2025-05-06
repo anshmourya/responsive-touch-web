@@ -2,12 +2,18 @@
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import UniversityForm from "./UniversityForm";
+import { Button } from "./ui/button";
 
 interface University {
   id: number;
   state: string;
   name: string;
   phone: string;
+  email: string;
+  address: string;
+  fees: string;
+  headName: string;
+  inFavourOf: string;
 }
 
 interface UniversityDetailsProps {
@@ -52,7 +58,7 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
   const handleSaveUniversity = (university: Omit<University, "id"> & { id?: number }) => {
     if (university.id) {
       // Editing existing university
-      onEditUniversity({ ...university, id: university.id } as University);
+      onEditUniversity(university as University);
     } else {
       // Creating new university
       onCreateNewUniversity(university);
@@ -91,12 +97,13 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
           <thead>
             <tr>
               <th>S.No.</th>
+              <th>Name</th>
               <th>State</th>
-              <th>University Name</th>
-              <th>Blank 1</th>
-              <th>Phone</th>
-              <th>Blank 2</th>
-              <th>Blank 3</th>
+              <th>Address</th>
+              <th>Email</th>
+              <th>Mobile</th>
+              <th>Head Name</th>
+              <th>Fees</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -104,12 +111,13 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
             {universities.map((university) => (
               <tr key={university.id}>
                 <td>{university.id}.</td>
-                <td>{university.state}</td>
                 <td>{university.name}</td>
-                <td>-------</td>
+                <td>{university.state}</td>
+                <td>{university.address || "---"}</td>
+                <td>{university.email || "---"}</td>
                 <td>{university.phone}</td>
-                <td>-------</td>
-                <td>-------</td>
+                <td>{university.headName || "---"}</td>
+                <td>{university.fees || "---"}</td>
                 <td className="action-cell">
                   <button 
                     className="btn btn-edit" 
@@ -127,31 +135,11 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
               </tr>
             ))}
             {/* Empty rows */}
-            {Array(10).fill(null).map((_, index) => (
-              <tr key={`empty-${index}`}>
-                <td>-</td>
-                <td>----</td>
-                <td>---------------</td>
-                <td>--------</td>
-                <td>----------</td>
-                <td>------</td>
-                <td>--------</td>
-                <td className="action-cell">
-                  <button 
-                    className="btn btn-edit"
-                    onClick={() => toast({ title: "Empty Row", description: "This is a placeholder row" })}
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    className="btn btn-delete"
-                    onClick={() => toast({ title: "Empty Row", description: "This is a placeholder row" })}
-                  >
-                    Delete
-                  </button>
-                </td>
+            {universities.length === 0 && (
+              <tr>
+                <td colSpan={9} className="text-center py-4">No universities found</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
