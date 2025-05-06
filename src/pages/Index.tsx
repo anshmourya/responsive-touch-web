@@ -1,13 +1,16 @@
 
 import { useState } from "react";
 import "../styles/universitySystem.css";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [activeView, setActiveView] = useState("universityDetails");
   const [username] = useState("User0");
+  const { toast } = useToast();
 
-  // Sample university data
-  const universities = [
+  // Sample university data with state management
+  const [universities, setUniversities] = useState([
     {
       id: 1,
       state: "Andhra Pradesh",
@@ -20,7 +23,7 @@ const Index = () => {
       name: "Uttar Pradesh University",
       phone: "+91-x-x-x-x-x",
     },
-  ];
+  ]);
 
   // Sample program data
   const programs = Array(15).fill(null).map((_, index) => ({
@@ -32,32 +35,74 @@ const Index = () => {
   }));
 
   const handleDeleteUniversity = (id: number) => {
-    console.log(`Deleting university with ID: ${id}`);
-    // In a real application, you would update state or call an API here
+    // Filter out the university with the given ID
+    const updatedUniversities = universities.filter(univ => univ.id !== id);
+    setUniversities(updatedUniversities);
+    
+    toast({
+      title: "University Deleted",
+      description: `University ID: ${id} has been removed`,
+    });
   };
 
   const handleEditUniversity = (id: number) => {
+    toast({
+      title: "Editing University",
+      description: `Opening edit form for University ID: ${id}`,
+    });
     console.log(`Editing university with ID: ${id}`);
     // In a real application, you would show an edit form or navigate to edit page
   };
 
   const handleViewChange = (view: string) => {
     setActiveView(view);
+    toast({
+      title: "View Changed",
+      description: `Switched to ${view === "universityData" ? "University Data" : "University Details"} view`,
+    });
   };
 
   const handleExportToExcel = () => {
+    toast({
+      title: "Exporting Data",
+      description: "Starting export to Excel...",
+    });
     console.log("Exporting to Excel");
     // In a real application, you would generate an Excel file here
   };
 
   const handleCreateNewUniversity = () => {
+    toast({
+      title: "Create University",
+      description: "Opening new university form",
+    });
     console.log("Creating new university");
     // In a real application, you would show a form or navigate to create page
   };
 
+  const handleDeleteUniversityDetail = () => {
+    toast({
+      title: "Delete University Detail",
+      description: "Please select universities to delete",
+    });
+    console.log("Delete University Detail clicked");
+  };
+
   const handleLogout = () => {
+    toast({
+      title: "Logging Out",
+      description: "You have been logged out",
+    });
     console.log("Logging out");
     // In a real application, you would handle logout logic here
+  };
+
+  const handleNavLink = (e: React.MouseEvent<HTMLAnchorElement>, label: string) => {
+    e.preventDefault();
+    toast({
+      title: "Navigation",
+      description: `Navigated to ${label}`,
+    });
   };
 
   return (
@@ -67,12 +112,12 @@ const Index = () => {
         <div className="logo">ESection</div>
         <nav className="main-nav">
           <ul>
-            <li><a href="#" className="nav-link">Home</a></li>
+            <li><a href="#" className="nav-link" onClick={(e) => handleNavLink(e, "Home")}>Home</a></li>
             <li className="dropdown">
-              <a href="#" className="nav-link">Forms ▾</a>
+              <a href="#" className="nav-link" onClick={(e) => handleNavLink(e, "Forms")}>Forms ▾</a>
             </li>
             <li className="dropdown">
-              <a href="#" className="nav-link">View ▾</a>
+              <a href="#" className="nav-link" onClick={(e) => handleNavLink(e, "View")}>View ▾</a>
             </li>
             <li>
               <a 
@@ -86,7 +131,7 @@ const Index = () => {
           </ul>
         </nav>
         <div className="user-controls">
-          <button className="user-btn">
+          <button className="user-btn" onClick={() => toast({ title: "User Profile", description: `Viewing profile for ${username}` })}>
             <span className="user-icon">👤</span> {username}
           </button>
           <button className="logout-btn" onClick={handleLogout}>Log out</button>
@@ -101,13 +146,22 @@ const Index = () => {
             <div className="section-header">
               <h2>University Details</h2>
               <div className="action-buttons">
-                <button className="btn btn-danger" onClick={() => console.log("Delete University Detail")}>
+                <button 
+                  className="btn btn-danger" 
+                  onClick={handleDeleteUniversityDetail}
+                >
                   Delete University Detail
                 </button>
-                <button className="btn btn-primary" onClick={handleCreateNewUniversity}>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={handleCreateNewUniversity}
+                >
                   Create new university
                 </button>
-                <button className="btn btn-danger" onClick={handleExportToExcel}>
+                <button 
+                  className="btn btn-danger" 
+                  onClick={handleExportToExcel}
+                >
                   Export to Excel
                 </button>
               </div>
@@ -164,8 +218,18 @@ const Index = () => {
                       <td>------</td>
                       <td>--------</td>
                       <td className="action-cell">
-                        <button className="btn btn-edit">Edit</button>
-                        <button className="btn btn-delete">Delete</button>
+                        <button 
+                          className="btn btn-edit"
+                          onClick={() => toast({ title: "Empty Row", description: "This is a placeholder row" })}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          className="btn btn-delete"
+                          onClick={() => toast({ title: "Empty Row", description: "This is a placeholder row" })}
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
