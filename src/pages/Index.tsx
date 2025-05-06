@@ -1,8 +1,10 @@
 
 import { useState } from "react";
 import "../styles/universitySystem.css";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
+import UniversityDetails from "@/components/UniversityDetails";
+import UniversityData from "@/components/UniversityData";
 
 const Index = () => {
   const [activeView, setActiveView] = useState("universityDetails");
@@ -97,180 +99,33 @@ const Index = () => {
     // In a real application, you would handle logout logic here
   };
 
-  const handleNavLink = (e: React.MouseEvent<HTMLAnchorElement>, label: string) => {
-    e.preventDefault();
-    toast({
-      title: "Navigation",
-      description: `Navigated to ${label}`,
-    });
-  };
-
   return (
     <div className="university-system">
       {/* Header/Navigation */}
-      <header className="header">
-        <div className="logo">ESection</div>
-        <nav className="main-nav">
-          <ul>
-            <li><a href="#" className="nav-link" onClick={(e) => handleNavLink(e, "Home")}>Home</a></li>
-            <li className="dropdown">
-              <a href="#" className="nav-link" onClick={(e) => handleNavLink(e, "Forms")}>Forms ▾</a>
-            </li>
-            <li className="dropdown">
-              <a href="#" className="nav-link" onClick={(e) => handleNavLink(e, "View")}>View ▾</a>
-            </li>
-            <li>
-              <a 
-                href="#" 
-                className={`nav-link ${activeView === "universityData" ? "active" : ""}`}
-                onClick={() => handleViewChange("universityData")}
-              >
-                University Data
-              </a>
-            </li>
-          </ul>
-        </nav>
-        <div className="user-controls">
-          <button className="user-btn" onClick={() => toast({ title: "User Profile", description: `Viewing profile for ${username}` })}>
-            <span className="user-icon">👤</span> {username}
-          </button>
-          <button className="logout-btn" onClick={handleLogout}>Log out</button>
-        </div>
-      </header>
+      <Header 
+        activeView={activeView} 
+        username={username}
+        onViewChange={handleViewChange}
+        onLogout={handleLogout}
+      />
 
       {/* Main Content */}
       <main className="main-content">
         {/* University Details View */}
         {activeView === "universityDetails" && (
-          <section className="university-details">
-            <div className="section-header">
-              <h2>University Details</h2>
-              <div className="action-buttons">
-                <button 
-                  className="btn btn-danger" 
-                  onClick={handleDeleteUniversityDetail}
-                >
-                  Delete University Detail
-                </button>
-                <button 
-                  className="btn btn-primary" 
-                  onClick={handleCreateNewUniversity}
-                >
-                  Create new university
-                </button>
-                <button 
-                  className="btn btn-danger" 
-                  onClick={handleExportToExcel}
-                >
-                  Export to Excel
-                </button>
-              </div>
-            </div>
-            
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>S.No.</th>
-                    <th>State</th>
-                    <th>University Name</th>
-                    <th>Blank 1</th>
-                    <th>Phone</th>
-                    <th>Blank 2</th>
-                    <th>Blank 3</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {universities.map((university) => (
-                    <tr key={university.id}>
-                      <td>{university.id}.</td>
-                      <td>{university.state}</td>
-                      <td>{university.name}</td>
-                      <td>-------</td>
-                      <td>{university.phone}</td>
-                      <td>-------</td>
-                      <td>-------</td>
-                      <td className="action-cell">
-                        <button 
-                          className="btn btn-edit" 
-                          onClick={() => handleEditUniversity(university.id)}
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          className="btn btn-delete" 
-                          onClick={() => handleDeleteUniversity(university.id)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {/* Empty rows */}
-                  {Array(10).fill(null).map((_, index) => (
-                    <tr key={`empty-${index}`}>
-                      <td>-</td>
-                      <td>----</td>
-                      <td>---------------</td>
-                      <td>--------</td>
-                      <td>----------</td>
-                      <td>------</td>
-                      <td>--------</td>
-                      <td className="action-cell">
-                        <button 
-                          className="btn btn-edit"
-                          onClick={() => toast({ title: "Empty Row", description: "This is a placeholder row" })}
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          className="btn btn-delete"
-                          onClick={() => toast({ title: "Empty Row", description: "This is a placeholder row" })}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+          <UniversityDetails 
+            universities={universities}
+            onDeleteUniversity={handleDeleteUniversity}
+            onEditUniversity={handleEditUniversity}
+            onDeleteUniversityDetail={handleDeleteUniversityDetail}
+            onCreateNewUniversity={handleCreateNewUniversity}
+            onExportToExcel={handleExportToExcel}
+          />
         )}
 
         {/* University Data View */}
         {activeView === "universityData" && (
-          <section className="university-data">
-            <div className="section-header">
-              <h2>Program Details</h2>
-            </div>
-            
-            <div className="table-container">
-              <table className="data-table program-table">
-                <thead>
-                  <tr>
-                    <th>No.</th>
-                    <th>Program name</th>
-                    <th>Total student</th>
-                    <th>DD Confirmation</th>
-                    <th>Pending</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {programs.map((program, index) => (
-                    <tr key={program.id} className={index % 2 === 0 ? "" : "alt-row"}>
-                      <td>x</td>
-                      <td>{program.name}</td>
-                      <td>{program.totalStudents}</td>
-                      <td>{program.ddConfirmation}</td>
-                      <td>{program.pending}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+          <UniversityData programs={programs} />
         )}
       </main>
     </div>
