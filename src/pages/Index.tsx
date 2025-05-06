@@ -6,13 +6,20 @@ import Header from "@/components/Header";
 import UniversityDetails from "@/components/UniversityDetails";
 import UniversityData from "@/components/UniversityData";
 
+interface University {
+  id: number;
+  state: string;
+  name: string;
+  phone: string;
+}
+
 const Index = () => {
   const [activeView, setActiveView] = useState("universityDetails");
   const [username] = useState("User0");
   const { toast } = useToast();
 
   // Sample university data with state management
-  const [universities, setUniversities] = useState([
+  const [universities, setUniversities] = useState<University[]>([
     {
       id: 1,
       state: "Andhra Pradesh",
@@ -47,13 +54,34 @@ const Index = () => {
     });
   };
 
-  const handleEditUniversity = (id: number) => {
+  const handleEditUniversity = (updatedUniversity: University) => {
+    const updatedUniversities = universities.map(univ => 
+      univ.id === updatedUniversity.id ? updatedUniversity : univ
+    );
+    
+    setUniversities(updatedUniversities);
+    
     toast({
-      title: "Editing University",
-      description: `Opening edit form for University ID: ${id}`,
+      title: "University Updated",
+      description: `University ID: ${updatedUniversity.id} has been updated`,
     });
-    console.log(`Editing university with ID: ${id}`);
-    // In a real application, you would show an edit form or navigate to edit page
+  };
+
+  const handleCreateUniversity = (newUniversity: Omit<University, "id">) => {
+    // Generate a new ID (in a real app, this would be handled by the backend)
+    const newId = Math.max(...universities.map(u => u.id), 0) + 1;
+    
+    const universityToAdd = {
+      ...newUniversity,
+      id: newId
+    };
+    
+    setUniversities([...universities, universityToAdd]);
+    
+    toast({
+      title: "University Created",
+      description: `New university "${newUniversity.name}" has been created`,
+    });
   };
 
   const handleViewChange = (view: string) => {
@@ -74,12 +102,7 @@ const Index = () => {
   };
 
   const handleCreateNewUniversity = () => {
-    toast({
-      title: "Create University",
-      description: "Opening new university form",
-    });
-    console.log("Creating new university");
-    // In a real application, you would show a form or navigate to create page
+    // This function is now handled directly in the UniversityDetails component
   };
 
   const handleDeleteUniversityDetail = () => {
@@ -118,7 +141,7 @@ const Index = () => {
             onDeleteUniversity={handleDeleteUniversity}
             onEditUniversity={handleEditUniversity}
             onDeleteUniversityDetail={handleDeleteUniversityDetail}
-            onCreateNewUniversity={handleCreateNewUniversity}
+            onCreateNewUniversity={handleCreateUniversity}
             onExportToExcel={handleExportToExcel}
           />
         )}

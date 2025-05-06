@@ -1,6 +1,7 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import UniversityForm from "./UniversityForm";
 
 interface University {
   id: number;
@@ -12,9 +13,9 @@ interface University {
 interface UniversityDetailsProps {
   universities: University[];
   onDeleteUniversity: (id: number) => void;
-  onEditUniversity: (id: number) => void;
+  onEditUniversity: (university: University) => void;
   onDeleteUniversityDetail: () => void;
-  onCreateNewUniversity: () => void;
+  onCreateNewUniversity: (university: Omit<University, "id">) => void;
   onExportToExcel: () => void;
 }
 
@@ -27,6 +28,37 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
   onExportToExcel
 }) => {
   const { toast } = useToast();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [currentUniversity, setCurrentUniversity] = useState<University | undefined>(undefined);
+
+  const handleOpenCreateForm = () => {
+    setCurrentUniversity(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleOpenEditForm = (id: number) => {
+    const university = universities.find(u => u.id === id);
+    if (university) {
+      setCurrentUniversity(university);
+      setIsFormOpen(true);
+    } else {
+      toast({
+        title: "Error",
+        description: "University not found",
+      });
+    }
+  };
+
+  const handleSaveUniversity = (university: Omit<University, "id"> & { id?: number }) => {
+    if (university.id) {
+      // Editing existing university
+      onEditUniversity({ ...university, id: university.id } as University);
+    } else {
+      // Creating new university
+      onCreateNewUniversity(university);
+    }
+    setIsFormOpen(false);
+  };
 
   return (
     <section className="university-details">
@@ -41,7 +73,7 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
           </button>
           <button 
             className="btn btn-primary" 
-            onClick={onCreateNewUniversity}
+            onClick={handleOpenCreateForm}
           >
             Create new university
           </button>
@@ -81,7 +113,7 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
                 <td className="action-cell">
                   <button 
                     className="btn btn-edit" 
-                    onClick={() => onEditUniversity(university.id)}
+                    onClick={() => handleOpenEditForm(university.id)}
                   >
                     Edit
                   </button>
@@ -123,6 +155,14 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({
           </tbody>
         </table>
       </div>
+
+      {/* University Form Modal */}
+      <UniversityForm
+        university={currentUniversity}
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSave={handleSaveUniversity}
+      />
     </section>
   );
 };
